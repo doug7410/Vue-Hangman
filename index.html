@@ -1,0 +1,144 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Webpack Demo</title>
+  <link rel="stylesheet" href="main.css">
+</head>
+
+<body>
+<div id="app">
+  <h2 v-if="category">Category: {{ category }}</h2>
+  <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="350px" height="260px" viewBox="0 0 350 275"
+       preserveAspectRatio="xMidYMid meet">
+    <line v-if="strikes > 0" x1="80" y1="257" x2="260" y2="257" class="line" />
+    <line v-if="strikes > 1" x1="100" y1="257" x2="100" y2="40" class="line" />
+    <line v-if="strikes > 2" x1="100" y1="40" x2="230" y2="40" class="line" />
+    <line v-if="strikes > 3" x1="100" y1="80" x2="130" y2="40" class="line" />
+    <line v-if="strikes > 4" x1="230" y1="40" x2="230" y2="80" class="line" />
+    <circle v-if="strikes > 5" cx="230" cy="90" class="circle" r="20" />
+    <line v-if="strikes > 6" x1="230" y1="110" x2="230" y2="170" class="line" />
+    <line v-if="strikes > 7" x1="230" y1="140" x2="250" y2="120" class="line" />
+    <line v-if="strikes > 8" x1="230" y1="140" x2="210" y2="120" class="line" />
+    <line v-if="strikes > 9" x1="230" y1="170" x2="250" y2="200" class="line" />
+    <line v-if="strikes > 10" x1="230" y1="170" x2="210" y2="200" class="line" />
+  </svg>
+  <div>
+    <div :class="[letter != ' ' ? 'letter' : 'space']" v-for="letter in wordDisplayLetters">
+      {{ letter != ' ' ? letter : '' }}
+    </div>
+  </div>
+  <template v-if="initialized">
+    <div>
+      <div @click="tryLetter(letter)" class="possibleLetter" :class="getStrikethroughClass(letter)" v-for="letter in possibleLetters1">
+        {{letter}}
+      </div>
+    </div>
+    <div>
+      <div @click="tryLetter(letter)" class="possibleLetter" :class="getStrikethroughClass(letter)" v-for="letter in possibleLetters2">
+        {{letter}}
+      </div>
+    </div>
+    <div>
+      <div @click="tryLetter(letter)" class="possibleLetter" :class="getStrikethroughClass(letter)" v-for="letter in possibleLetters3">
+        {{letter}}
+      </div>
+    </div>
+  </template>
+  <button @click="initialize()">New Game</button>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.16/vue.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.js"></script>
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<script>
+    new Vue({
+      el: '#app',
+      data: {
+          strikes: 11,
+          word: "HANGMAN",
+          category: null,
+          wordLetters: ['H', 'A', 'N', 'G', 'M', 'A', 'N'],
+          wordDisplayLetters: ['H', 'A', 'N', 'G', 'M', 'A', 'N'],
+          usedLetters: [],
+          possibleLetters1: ["A", "B", "C", "D", "E", "F", "G", "H", "I"],
+          possibleLetters2: ["J", "K", "L", "M", "N", "O", "P", "Q", "R", "S"],
+          possibleLetters3: ["T", "U", "V", "W", "X", "Y", "Z"],
+          initialized: false
+      },
+      methods: {
+        initialize: function() {
+          var vm = this;
+          axios.get('http://localhost:1234')
+            .then(function (res) {
+              vm.initialized = true;
+              vm.strikes = 0;
+              vm.word = res.data.word;
+              vm.category = res.data.category;
+              vm.wordLetters = vm.word.toUpperCase().split('');
+              vm.wordDisplayLetters = vm.wordLetters.map(function(letter){
+                var letterIsNotAlpha = !letter.match(/^[a-z0-9]+$/i)
+                if(letter === ' ') {
+                  return ' '
+                } else if(letterIsNotAlpha) {
+                  return letter
+                } else {
+                  return ''
+                }
+              });
+              vm.usedLetters = [];
+            })
+        },
+        tryLetter: function(letter) {
+          if (this.usedLetters.includes(letter)) {
+            return
+          }
+
+          this.usedLetters.push(letter)
+          var match = false
+          for (var i = 0; i < this.wordDisplayLetters.length; i++) {
+            if (letter === this.wordLetters[i]) {
+              this.wordDisplayLetters.splice(i, 1, letter)
+              match = true
+            }
+          }
+
+          if (!match) {
+            this.strikes++
+          }
+        },
+        getStrikethroughClass: function(letter) {
+          if (this.usedLetters.includes(letter)) {
+            return 'diagonal-strike';
+          }
+          return null;
+        }
+      },
+      watch: {
+        gameIsWon: function(isWon) {
+          if(isWon) {
+            swal("Good job!", "You won!", "success");
+          }
+        }
+      },
+      computed: {
+        gameIsWon: function () {
+          var vm = this;
+          if(!vm.initialized) {
+            return false;
+          }
+          var won = true;
+          this.wordLetters.forEach(function (letter) {
+            if (!vm.wordDisplayLetters.includes(letter)) {
+              won = false;
+            }
+          });
+          return won;
+        }
+      }
+    })
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,58 @@
+#app {
+    text-align: center;
+}
+
+.letter {
+    display: inline-block;
+    border-bottom: 1px solid;
+    margin: 0px 3px 0px 3px;
+    font-size: 30px;
+    min-width: 30px;
+    vertical-align: bottom;
+}
+
+.space {
+    display: inline-block;
+    margin: 0px 3px 0px 3px;
+    font-size: 30px;
+    min-width: 30px;
+    vertical-align: bottom;
+}
+
+.possibleLetter {
+    display: inline-block;
+    margin: 10px 3px 0px 3px;
+    font-size: 30px;
+    min-width: 30px;
+    cursor: pointer;
+}
+
+.diagonal-strike {
+    background: linear-gradient(to left top, transparent 47.75%, currentColor 49.5%, currentColor 50.5%, transparent 52.25%);
+    color: dimgrey;
+}
+
+.line {
+    stroke: black;
+    fill: none;
+    stroke-width: 2px;
+}
+
+.circle {
+    fill: khaki;
+    stroke: black;
+    stroke-width: 2px;
+}
+
+button {
+    margin-top: 20px;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 15px;
+}
+
+button:hover {
+    background-color: #e6e6e6;
+    border-color: #adadad;
+}
