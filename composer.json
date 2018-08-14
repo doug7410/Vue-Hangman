@@ -2,7 +2,8 @@
     "name": "dougsteinberg/webpack_demo",
     "require": {
         "guzzlehttp/guzzle": "^6.3",
-        "tightenco/collect": "^5.6"
+        "tightenco/collect": "^5.6",
+        "vlucas/phpdotenv": "^2.5"
     },
     "authors": [
         {

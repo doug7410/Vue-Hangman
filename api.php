@@ -10,12 +10,14 @@ class WordsApi {
 
     public function __construct()
     {
+        $dotenv = new Dotenv\Dotenv(__DIR__);
+        $dotenv->load();
         $this->client = new Client([
             'base_uri' => 'https://od-api.oxforddictionaries.com:443',
             'headers' => [
                 "Accept" => "application/json",
-                "app_id" => "a9952c56",
-                "app_key" => "99658bf44d955f66509354dd42d6b8bb"
+                "app_id" => getenv('APP_ID'),
+                "app_key" => getenv('APP_KEY')
             ]
         ]);
         $this->fillCategories();
@@ -72,4 +74,4 @@ if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 $wordsApi = new WordsApi();
-echo $wordsApi->getWordAndCategory()->toJson();
+ echo $wordsApi->getWordAndCategory()->toJson();
